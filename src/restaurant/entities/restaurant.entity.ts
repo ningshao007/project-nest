@@ -18,7 +18,7 @@ export class Restaurant {
   name: string;
 
   // NOTE: 注意这里的这些默认值用法
-  @Field(() => Boolean, { nullable: true, defaultValue: true })
+  @Field(() => Boolean, { nullable: true })
   @Column({ default: false })
   @IsOptional()
   @IsBoolean()
