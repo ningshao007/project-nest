@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateRestaurantDto } from './entities/create-restaurant.dto';
+import { CreateRestaurantDto } from './dtos/create-restaurant.dto';
 import { Restaurant } from './entities/restaurant.entity';
 
 @Injectable()
