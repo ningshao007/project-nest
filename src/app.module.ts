@@ -5,6 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { RestaurantModule } from './restaurant/restaurant.module';
+import { Restaurant } from './restaurant/entities/restaurant.entity';
 
 @Module({
   imports: [
@@ -33,8 +34,9 @@ import { RestaurantModule } from './restaurant/restaurant.module';
       username: 'ningshao',
       password: '12345',
       database: 'ningshao1',
-      synchronize: true,
+      synchronize: process.env.NODE_ENV !== 'prod',
       logging: true,
+      entities: [Restaurant],
     }),
     RestaurantModule,
   ],
