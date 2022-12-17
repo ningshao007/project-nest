@@ -28,6 +28,7 @@ export class UserResolver {
 
   @Query(() => User)
   me(@Context() context) {
+    // console.log('------@Context-------', context);
     if (!context.user) {
       return [];
     } else {
