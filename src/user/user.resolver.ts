@@ -1,5 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { AuthUser } from 'src/auth/auth-user.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
 import {
   CreateAccountInput,
@@ -28,14 +29,17 @@ export class UserResolver {
     return this.userService.login(loginInput);
   }
 
+  // me(@Context() context) {
+  // console.log('------@Context-------', context);
+  //   if (!context.user) {
+  //     return [];
+  //   } else {
+  //     return context.user;
+  //   }
+  // }
   @Query(() => User)
   @UseGuards(AuthGuard)
-  me(@Context() context) {
-    // console.log('------@Context-------', context);
-    if (!context.user) {
-      return [];
-    } else {
-      return context.user;
-    }
+  me(@AuthUser() authUser: User) {
+    return authUser;
   }
 }
