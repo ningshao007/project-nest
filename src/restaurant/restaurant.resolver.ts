@@ -22,7 +22,6 @@ export class RestaurantResolver {
   async createRestaurant(
     @Args('input') createRestaurantDto: CreateRestaurantDto,
   ) {
-    console.log(createRestaurantDto);
     return this.restaurantService.createRestaurant(createRestaurantDto);
   }
 

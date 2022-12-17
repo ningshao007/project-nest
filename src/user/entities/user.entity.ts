@@ -42,12 +42,10 @@ export class User extends CoreEntity {
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword(): Promise<void> {
-    console.log('-----this.password----', this.password);
     if (this.password) {
       try {
         this.password = await bcrypt.hash(this.password, 10);
       } catch (e) {
-        console.log(e);
         throw new InternalServerErrorException();
       }
     }
@@ -55,7 +53,6 @@ export class User extends CoreEntity {
 
   async checkPassword(aPassword: string): Promise<boolean> {
     try {
-      console.log('----===----', aPassword, this.password);
       const isCorrect = await bcrypt.compare(aPassword, this.password);
 
       return isCorrect;
