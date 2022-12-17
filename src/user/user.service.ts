@@ -10,9 +10,10 @@ import {
 import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { User } from './entities/user.entity';
 import { JwtService } from 'src/jwt/jwt.service';
-import { EditProfileInput } from './dtos/edit-profile.dto';
+import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
 import { VerifyEmailOutput } from './dtos/verify-email.dto';
+import { UserProfileOutput } from './dtos/user-profile.dto';
 
 @Injectable()
 export class UserService {
@@ -89,29 +90,57 @@ export class UserService {
     }
   }
 
-  async findById(id: number): Promise<User> {
-    return this.users.findOneBy({ id });
+  async findById(id: number): Promise<UserProfileOutput> {
+    try {
+      const user = await this.users.findOne({ where: { id } });
+
+      if (user) {
+        return {
+          ok: true,
+          user: user,
+        };
+      }
+
+      return {
+        ok: false,
+        error: '当前用户不存在',
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
   }
 
   async editProfile(
     userId: number,
     { email, password }: EditProfileInput,
-  ): Promise<User> {
-    // NOTE: 这样保存password字段不会触发@BeforeInsert()和@BeforeUpdate()方法,密码还是会明文保存
-    // return this.users.update(userId, { ...editProfileInput });
-    const user = await this.users.findOne({ where: { id: userId } });
+  ): Promise<EditProfileOutput> {
+    try {
+      // NOTE: 这样保存password字段不会触发@BeforeInsert()和@BeforeUpdate()方法,密码还是会明文保存
+      // return this.users.update(userId, { ...editProfileInput });
+      const user = await this.users.findOne({ where: { id: userId } });
 
-    if (email) {
-      user.email = email;
-      user.verified = false;
-      await this.verifications.delete({ user: { id: user.id } });
-      await this.verifications.save(this.verifications.create({ user }));
-    }
-    if (password) {
-      user.password = password;
-    }
+      if (email) {
+        user.email = email;
+        user.verified = false;
+        await this.verifications.delete({ user: { id: user.id } });
+        await this.verifications.save(this.verifications.create({ user }));
+      }
+      if (password) {
+        user.password = password;
+      }
 
-    return this.users.save(user);
+      await this.users.save(user);
+
+      return { ok: true };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
   }
 
   async verifyEmail(code: string): Promise<VerifyEmailOutput> {

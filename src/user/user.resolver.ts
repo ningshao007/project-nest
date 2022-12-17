@@ -49,17 +49,7 @@ export class UserResolver {
   @Query(() => UserProfileOutput)
   @UseGuards(AuthGuard)
   async userProfile(@Args() userProfileInput: UserProfileInput) {
-    try {
-      const user = await this.userService.findById(userProfileInput.userId);
-
-      if (!user) {
-        throw new Error('oops');
-      }
-
-      return { ok: true, user };
-    } catch (error) {
-      return { ok: false, error };
-    }
+    return this.userService.findById(userProfileInput.userId);
   }
 
   @Mutation(() => EditProfileOutput)
@@ -67,20 +57,8 @@ export class UserResolver {
   async editProfile(
     @AuthUser() authUser,
     @Args('input') editProfile: EditProfileInput,
-  ): Promise<EditProfileOutput> {
-    try {
-      await this.userService.editProfile(authUser.id, editProfile);
-
-      return {
-        ok: true,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        error,
-      };
-    }
+  ) {
+    return this.userService.editProfile(authUser.id, editProfile);
   }
 
   @Mutation(() => VerifyEmailOutput)
