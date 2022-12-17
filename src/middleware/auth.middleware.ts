@@ -27,8 +27,8 @@ export class authMiddleware implements NestMiddleware {
           throw new InternalServerErrorException();
         }
       }
-
-      next();
     }
+
+    next();
   }
 }
