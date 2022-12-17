@@ -37,6 +37,7 @@ import { authMiddleware } from './middleware/auth.middleware';
       driver: ApolloDriver,
       playground: process.env.NODE_ENV !== 'production',
       autoSchemaFile: true,
+      context: ({ req }) => ({ user: req['user'] }),
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
