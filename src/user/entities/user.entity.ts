@@ -7,7 +7,7 @@ import {
 import { IsEmail, IsEnum, IsString } from 'class-validator';
 import * as bcrypt from 'bcrypt';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { BeforeInsert, Column, Entity } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import { InternalServerErrorException } from '@nestjs/common';
 
 enum UserRole {
@@ -40,11 +40,26 @@ export class User extends CoreEntity {
   role: UserRole;
 
   @BeforeInsert()
+  @BeforeUpdate()
   async hashPassword(): Promise<void> {
+    console.log('-----this.password----', this.password);
+    if (this.password) {
+      try {
+        this.password = await bcrypt.hash(this.password, 10);
+      } catch (e) {
+        console.log(e);
+        throw new InternalServerErrorException();
+      }
+    }
+  }
+
+  async checkPassword(aPassword: string): Promise<boolean> {
     try {
-      this.password = await bcrypt.hash(this.password, 10);
-    } catch (e) {
-      console.log(e);
+      console.log('----===----', aPassword, this.password);
+      const isCorrect = await bcrypt.compare(aPassword, this.password);
+
+      return isCorrect;
+    } catch (error) {
       throw new InternalServerErrorException();
     }
   }
