@@ -16,6 +16,7 @@ import { CommonModule } from './common/common.module';
 import { User } from './user/entities/user.entity';
 import { JwtModule } from './jwt/jwt.module';
 import { authMiddleware } from './middleware/auth.middleware';
+import { Verification } from './user/entities/verification.entity';
 
 @Module({
   imports: [
@@ -48,7 +49,7 @@ import { authMiddleware } from './middleware/auth.middleware';
       database: 'ningshao1',
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: process.env.NODE_ENV !== 'prod',
-      entities: [Restaurant, User],
+      entities: [Restaurant, User, Verification],
     }),
     RestaurantModule,
     UserModule,
