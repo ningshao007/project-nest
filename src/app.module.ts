@@ -9,6 +9,7 @@ import { Restaurant } from './restaurant/entities/restaurant.entity';
 import { UserModule } from './user/user.module';
 import { CommonModule } from './common/common.module';
 import { User } from './user/entities/user.entity';
+import { JwtModule } from './jwt/jwt.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { User } from './user/entities/user.entity';
     RestaurantModule,
     UserModule,
     CommonModule,
+    JwtModule.forRoot(),
   ],
   controllers: [],
   providers: [],
