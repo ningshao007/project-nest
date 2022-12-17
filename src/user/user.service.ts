@@ -10,6 +10,7 @@ import {
 import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { User } from './entities/user.entity';
 import { JwtService } from 'src/jwt/jwt.service';
+import { EditProfileInput } from './dtos/edit-profile.dto';
 
 @Injectable()
 export class UserService {
@@ -79,5 +80,24 @@ export class UserService {
 
   async findById(id: number): Promise<User> {
     return this.users.findOneBy({ id });
+  }
+
+  async editProfile(userId: number, editProfileInput: EditProfileInput) {
+    // NOTE: 这样保存password字段不会触发@BeforeInsert()和@BeforeUpdate()方法,密码还是会明文保存
+    // return this.users.update(userId, { ...editProfileInput });
+    const user = await this.users.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (editProfileInput.email) {
+      user.email = editProfileInput.email;
+    }
+    if (editProfileInput.password) {
+      user.password = editProfileInput.email;
+    }
+
+    return this.users.save(user);
   }
 }
