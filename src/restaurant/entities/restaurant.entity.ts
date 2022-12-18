@@ -1,33 +1,14 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsString, Length } from 'class-validator';
+import { CoreEntity } from 'src/common/entities/core.entity';
 import { User } from 'src/user/entities/user.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Category } from './category.entity';
 
 @InputType('RestaurantInputType', { isAbstract: true })
 @ObjectType() // NOTE: 将一个普通的类标记为Graphql对象类型
 @Entity()
-export class Restaurant {
-  @PrimaryGeneratedColumn()
-  @Field(() => Number)
-  id: number;
-
-  @CreateDateColumn()
-  @Field(() => Date)
-  createAt: Date;
-
-  @UpdateDateColumn()
-  @Field(() => Date)
-  updateAt: Date;
-
+export class Restaurant extends CoreEntity {
   // NOTE: 在这边做参数校验,然后dto那边只用mapped-types
   @Field(() => String)
   @Column()
