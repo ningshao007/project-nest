@@ -18,6 +18,7 @@ import { JwtModule } from './jwt/jwt.module';
 import { authMiddleware } from './middleware/auth.middleware';
 import { Verification } from './user/entities/verification.entity';
 import { MailModule } from './mail/mail.module';
+import { Category } from './restaurant/entities/category.entity';
 
 @Module({
   imports: [
@@ -53,7 +54,7 @@ import { MailModule } from './mail/mail.module';
       database: 'ningshao1',
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: process.env.NODE_ENV !== 'prod',
-      entities: [Restaurant, User, Verification],
+      entities: [Restaurant, User, Verification, Category],
     }),
     RestaurantModule,
     UserModule,
