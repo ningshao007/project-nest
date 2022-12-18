@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dot';
 import {
   CreateRestaurantInput,
@@ -192,5 +192,11 @@ export class RestaurantService {
         error,
       };
     }
+  }
+
+  async countRestaurants(category: Category) {
+    return await this.restaurants.count({
+      category,
+    } as FindManyOptions<Restaurant>);
   }
 }
