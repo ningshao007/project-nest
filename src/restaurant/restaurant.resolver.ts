@@ -6,6 +6,10 @@ import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
+import {
+  EditRestaurantInput,
+  EditRestaurantOutput,
+} from './dtos/edit-restaurant.dto';
 import { UpdateRestaurantDto } from './dtos/update-restaurant.dto';
 import { Restaurant } from './entities/restaurant.entity';
 import { RestaurantService } from './restaurant.service';
@@ -41,5 +45,14 @@ export class RestaurantResolver {
     @Args('input') updateRestaurantDto: UpdateRestaurantDto,
   ) {
     return this.restaurantService.updateRestaurant(updateRestaurantDto);
+  }
+
+  @Mutation(() => EditRestaurantOutput)
+  @Role(['OWNER'])
+  editRestaurant(
+    @AuthUser() authUser: User,
+    @Args('input') editRestaurantInput: EditRestaurantInput,
+  ) {
+    return this.restaurantService.editRestaurant(authUser, editRestaurantInput);
   }
 }
