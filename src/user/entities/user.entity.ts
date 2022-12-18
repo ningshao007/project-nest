@@ -11,7 +11,7 @@ import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
 
-enum UserRole {
+export enum UserRole {
   CLIENT = 'CLIENT',
   OWNER = 'OWNER',
   DELIVERY = 'DELIVERY',

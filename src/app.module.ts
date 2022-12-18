@@ -19,6 +19,7 @@ import { authMiddleware } from './middleware/auth.middleware';
 import { Verification } from './user/entities/verification.entity';
 import { MailModule } from './mail/mail.module';
 import { Category } from './restaurant/entities/category.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -43,7 +44,13 @@ import { Category } from './restaurant/entities/category.entity';
       driver: ApolloDriver,
       playground: process.env.NODE_ENV !== 'production',
       autoSchemaFile: true,
-      context: ({ req }) => ({ user: req['user'] }),
+      context: ({ req }) => {
+        const TOKEN_KEY = 'x-jwt';
+
+        return {
+          token: req && req.headers[TOKEN_KEY],
+        };
+      },
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -67,6 +74,7 @@ import { Category } from './restaurant/entities/category.entity';
       domain: process.env.MAILGUN_DOMAIN_NAME,
       fromEmail: process.env.MAILGUN_FROM_EMAIL,
     }),
+    AuthModule,
   ],
   controllers: [],
   providers: [],
