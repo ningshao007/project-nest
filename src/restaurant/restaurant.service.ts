@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { FindManyOptions, Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dot';
+import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -198,5 +199,34 @@ export class RestaurantService {
     return await this.restaurants.count({
       category,
     } as FindManyOptions<Restaurant>);
+  }
+
+  async findCategoryBySlug({ slug }: CategoryInput): Promise<CategoryOutput> {
+    try {
+      const category = await this.categories.findOne({
+        where: { slug },
+        // NOTE: 注意这里关联的查询用法
+        relations: ['restaurants', 'restaurants.owner'],
+      });
+
+      console.log('---------category-----', category);
+
+      if (!category) {
+        return {
+          ok: false,
+          error: 'category not found',
+        };
+      }
+
+      return {
+        ok: true,
+        category,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
   }
 }

@@ -11,6 +11,7 @@ import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Role } from 'src/auth/role.decorator';
 import { User } from 'src/user/entities/user.entity';
 import { AllCategoriesOutput } from './dtos/all-categories.dot';
+import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -95,5 +96,10 @@ export class CategoryResolver {
   @Query(() => AllCategoriesOutput)
   allCategories() {
     return this.restaurantService.allCategories();
+  }
+
+  @Query(() => CategoryOutput)
+  category(@Args() categoryInput: CategoryInput) {
+    return this.restaurantService.findCategoryBySlug(categoryInput);
   }
 }
