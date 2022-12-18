@@ -97,6 +97,36 @@ export class RestaurantService {
         };
       }
 
+      let category;
+
+      if (editRestaurantInput.categoryName) {
+        const categoryName = editRestaurantInput.categoryName
+          .trim()
+          .toLowerCase();
+        const categorySlug = categoryName.replace(/ /g, '-');
+        category = await this.categories.findOne({
+          where: { slug: categorySlug },
+        });
+
+        if (!category) {
+          category = await this.categories.save(
+            this.categories.create({
+              slug: categorySlug,
+              name: categoryName,
+            }),
+          );
+        }
+      }
+
+      await this.restaurants.save([
+        {
+          id: editRestaurantInput.restaurantId,
+          ...editRestaurantInput,
+          // NOTE: 注意这里的妙用,过滤掉空值
+          ...(category && { category }),
+        },
+      ]);
+
       return {
         ok: true,
       };
