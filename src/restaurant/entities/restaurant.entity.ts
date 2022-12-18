@@ -1,5 +1,6 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsString, Length } from 'class-validator';
+import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -45,8 +46,17 @@ export class Restaurant {
   address: string;
 
   @Field(() => Category)
-  @ManyToOne(() => Category, (category) => category.restaurants)
+  @ManyToOne(() => Category, (category) => category.restaurants, {
+    nullable: true,
+    onDelete: 'CASCADE',
+    eager: true,
+  })
   // NOTE: 用于指定外键字段的名称;其实@ManyToOne会自动生成名称
   @JoinColumn({ name: 'category_id' })
   category: Category;
+
+  @Field(() => User)
+  @ManyToOne(() => User, (user) => user.restaurants)
+  @JoinColumn({ name: 'owner_id' })
+  owner: User;
 }
