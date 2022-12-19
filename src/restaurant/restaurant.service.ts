@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
-import { FindManyOptions, Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dot';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import {
@@ -201,16 +201,19 @@ export class RestaurantService {
     } as FindManyOptions<Restaurant>);
   }
 
-  async findCategoryBySlug({ slug }: CategoryInput): Promise<CategoryOutput> {
+  async findCategoryBySlug({
+    slug,
+    page,
+  }: CategoryInput): Promise<CategoryOutput> {
     try {
       const category = await this.categories.findOne({
         where: { slug },
         // NOTE: 注意这里关联的查询用法
-        relations: ['restaurants', 'restaurants.owner'],
+        // relations: ['restaurants', 'restaurants.owner'],
+        relations: ['restaurants'],
       });
 
-      console.log('---------category-----', category);
-
+      console.log('----------category---------', category);
       if (!category) {
         return {
           ok: false,
@@ -218,9 +221,32 @@ export class RestaurantService {
         };
       }
 
+      if (!category) {
+        return {
+          ok: false,
+          error: 'Category not found',
+        };
+      }
+
+      try {
+        // FIXED: 这里查询不知哪里报错了,回过头再细细看
+        const restaurants = await this.restaurants.find({
+          where: { category } as FindOptionsWhere<Category>,
+          // take: 2,
+          // skip: (page - 1) * 2,
+        });
+        console.log('================', restaurants);
+        category.restaurants = restaurants;
+      } catch (error) {
+        console.log('-----------', error);
+      }
+
+      const totalResults = await this.countRestaurants(category);
+
       return {
         ok: true,
         category,
+        totalPages: Math.ceil(totalResults / 2),
       };
     } catch (error) {
       return {

@@ -1,17 +1,20 @@
-import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsString } from 'class-validator';
-import { CoreOutput } from 'src/common/dtos/output.dto';
+import {
+  PaginationInput,
+  PaginationOutput,
+} from 'src/common/dtos/pagination.dto';
 import { Category } from '../entities/category.entity';
 
-@ArgsType()
-export class CategoryInput {
+@InputType()
+export class CategoryInput extends PaginationInput {
   @Field(() => String)
   @IsString()
   slug: string;
 }
 
 @ObjectType()
-export class CategoryOutput extends CoreOutput {
+export class CategoryOutput extends PaginationOutput {
   @Field(() => Category, { nullable: true })
   category?: Category;
 }
