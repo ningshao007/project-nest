@@ -16,6 +16,7 @@ import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
+import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurantd.dot';
 import { UpdateRestaurantDto } from './dtos/update-restaurant.dto';
 import { Category } from './entities/category.entity';
 import { Restaurant } from './entities/restaurant.entity';
@@ -228,25 +229,46 @@ export class RestaurantService {
         };
       }
 
-      try {
-        // FIXED: 这里查询不知哪里报错了,回过头再细细看
-        const restaurants = await this.restaurants.find({
-          where: { category } as FindOptionsWhere<Category>,
-          // take: 2,
-          // skip: (page - 1) * 2,
-        });
-        console.log('================', restaurants);
-        category.restaurants = restaurants;
-      } catch (error) {
-        console.log('-----------', error);
-      }
+      // FIXED: 这里查询不知哪里报错了,回过头再细细看
+      const restaurants = await this.restaurants.find({
+        where: { category } as FindOptionsWhere<Category>,
+        // take: 2,
+        // skip: (page - 1) * 2,
+      });
+      console.log('================', restaurants);
+      category.restaurants = restaurants;
 
       const totalResults = await this.countRestaurants(category);
 
       return {
         ok: true,
         category,
+        restaurants,
         totalPages: Math.ceil(totalResults / 2),
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  async allRestaurants({
+    page,
+    take,
+  }: RestaurantsInput): Promise<RestaurantsOutput> {
+    try {
+      const [restaurants, totalResults] = await this.restaurants.findAndCount({
+        skip: (page - 1) * take,
+        take,
+      });
+
+      return {
+        ok: true,
+        results: restaurants,
+        totalPages: Math.ceil(totalResults / take),
+        totalResults,
       };
     } catch (error) {
       return {
