@@ -155,7 +155,6 @@ export class UserService {
     try {
       const verification = await this.verifications.findOne({
         where: { code },
-        relations: ['user'],
       });
 
       if (verification) {
