@@ -15,6 +15,7 @@ import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
+import { DeleteDishInput, DeleteDishOutput } from './dtos/delete-dish.dot';
 import {
   DeleteRestaurantInput,
   DeleteRestaurantOutput,
@@ -375,6 +376,43 @@ export class RestaurantService {
       await this.dishes.save(
         this.dishes.create({ ...createDishInput, restaurant }),
       );
+
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  async deleteDish(
+    owner: User,
+    { dishId }: DeleteDishInput,
+  ): Promise<DeleteDishOutput> {
+    try {
+      const dish = await this.dishes.findOne({
+        where: { id: dishId },
+        relations: ['restaurant'],
+      });
+
+      if (!dish) {
+        return {
+          ok: false,
+          error: 'Dish not found',
+        };
+      }
+
+      if (dish.restaurant.ownerId !== owner.id) {
+        return {
+          ok: false,
+          error: '你没有权限',
+        };
+      }
+
+      await this.dishes.delete(dishId);
 
       return {
         ok: true,
