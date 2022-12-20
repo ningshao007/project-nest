@@ -21,6 +21,8 @@ import { MailModule } from './mail/mail.module';
 import { Category } from './restaurant/entities/category.entity';
 import { AuthModule } from './auth/auth.module';
 import { Dish } from './restaurant/entities/dish.entity';
+import { OrdersModule } from './orders/orders.module';
+import { Order } from './orders/entities/order.entity';
 
 @Module({
   imports: [
@@ -62,7 +64,7 @@ import { Dish } from './restaurant/entities/dish.entity';
       database: 'ningshao1',
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: process.env.NODE_ENV !== 'prod',
-      entities: [Restaurant, User, Verification, Category, Dish],
+      entities: [Restaurant, User, Verification, Category, Dish, Order],
     }),
     RestaurantModule,
     UserModule,
@@ -76,6 +78,7 @@ import { Dish } from './restaurant/entities/dish.entity';
       fromEmail: process.env.MAILGUN_FROM_EMAIL,
     }),
     AuthModule,
+    OrdersModule,
   ],
   controllers: [],
   providers: [],
