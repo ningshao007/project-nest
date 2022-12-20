@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dot';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
+import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -30,6 +31,7 @@ import {
 } from './dtos/search-restaurant.dto';
 import { UpdateRestaurantDto } from './dtos/update-restaurant.dto';
 import { Category } from './entities/category.entity';
+import { Dish } from './entities/dish.entity';
 import { Restaurant } from './entities/restaurant.entity';
 
 @Injectable()
@@ -39,6 +41,7 @@ export class RestaurantService {
     private readonly restaurants: Repository<Restaurant>,
     @InjectRepository(Category)
     private readonly categories: Repository<Category>,
+    @InjectRepository(Dish) private readonly dishes: Repository<Dish>,
   ) {}
 
   getAll(): Promise<Restaurant[]> {
@@ -295,6 +298,7 @@ export class RestaurantService {
     try {
       const restaurant = await this.restaurants.findOne({
         where: { id: restaurantId },
+        relations: ['menu'],
       });
 
       if (!restaurant) {
@@ -334,6 +338,46 @@ export class RestaurantService {
         restaurants,
         totalResults,
         totalPages: Math.ceil(totalResults / 10),
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  async createDish(
+    owner: User,
+    createDishInput: CreateDishInput,
+  ): Promise<CreateDishOutput> {
+    try {
+      const restaurant = await this.restaurants.findOne({
+        where: {
+          id: createDishInput.restaurantId,
+        },
+      });
+
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant not found',
+        };
+      }
+
+      if (owner.id !== restaurant.ownerId) {
+        return {
+          ok: false,
+          error: '你没有权限',
+        };
+      }
+
+      await this.dishes.save(
+        this.dishes.create({ ...createDishInput, restaurant }),
+      );
+
+      return {
+        ok: true,
       };
     } catch (error) {
       return {
