@@ -2,8 +2,16 @@ import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsString, Length } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, RelationId } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  RelationId,
+} from 'typeorm';
 import { Category } from './category.entity';
+import { Dish } from './dish.entity';
 
 @InputType('RestaurantInputType', { isAbstract: true })
 @ObjectType() // NOTE: 将一个普通的类标记为Graphql对象类型
@@ -46,4 +54,8 @@ export class Restaurant extends CoreEntity {
 
   @RelationId((restaurant: Restaurant) => restaurant.owner)
   ownerId: number;
+
+  @Field(() => [Dish])
+  @OneToMany(() => Dish, (dish) => dish.restaurant)
+  menu: Dish[];
 }
