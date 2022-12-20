@@ -22,6 +22,7 @@ import {
   DeleteRestaurantInput,
   DeleteRestaurantOutput,
 } from './dtos/delete-restaurant.dot';
+import { EditDishInput, EditDishOutput } from './dtos/edit-dish.dto';
 import {
   EditRestaurantInput,
   EditRestaurantOutput,
@@ -150,5 +151,14 @@ export class DishResolver {
     @Args('input') deleteDishInput: DeleteDishInput,
   ) {
     return this.restaurantService.deleteDish(owner, deleteDishInput);
+  }
+
+  @Mutation(() => EditDishOutput)
+  @Role(['OWNER'])
+  editDish(
+    @AuthUser() owner: User,
+    @Args('input') editDishInput: EditDishInput,
+  ) {
+    return this.restaurantService.editDish(owner, editDishInput);
   }
 }
