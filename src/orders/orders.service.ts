@@ -8,10 +8,11 @@ import { Dish } from 'src/restaurant/entities/dish.entity';
 import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
 import { User, UserRole } from 'src/user/entities/user.entity';
 import { FindOptionsWhere, Repository } from 'typeorm';
+import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { OrderItem } from './entities/order-item.entity';
-import { Order } from './entities/order.entity';
+import { Order, OrderStatus } from './entities/order.entity';
 
 @Injectable()
 export class OrderService {
@@ -190,6 +191,90 @@ export class OrderService {
       return {
         ok: true,
         order,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  canSeeOrder(user: User, order: Order): boolean {
+    let canSee = true;
+
+    if (user.role === UserRole.CLIENT && order.customerId !== user.id) {
+      canSee = false;
+    }
+    if (user.role === UserRole.DELIVERY && order.driverId !== user.id) {
+      canSee = false;
+    }
+    if (user.role === UserRole.OWNER && order.restaurant.ownerId !== user.id) {
+      canSee = false;
+    }
+
+    return canSee;
+  }
+
+  async editOrder(
+    user: User,
+    { id: orderId, status }: EditOrderInput,
+  ): Promise<EditOrderOutput> {
+    try {
+      const order = await this.orders.findOne({
+        where: {
+          id: orderId,
+        },
+        relations: ['restaurant'],
+      });
+      if (!order) {
+        return {
+          ok: false,
+          error: 'order not found',
+        };
+      }
+      if (!this.canSeeOrder(user, order)) {
+        return {
+          ok: false,
+          error: '你没有权限',
+        };
+      }
+
+      let canEdit = true;
+
+      if (user.role === UserRole.CLIENT) {
+        canEdit = false;
+      }
+      if (user.role === UserRole.OWNER) {
+        if (status !== OrderStatus.COOKING && status !== OrderStatus.COOKED) {
+          canEdit = false;
+        }
+      }
+      if (user.role === UserRole.DELIVERY) {
+        if (
+          status !== OrderStatus.PICKED_UP &&
+          status !== OrderStatus.DELIVERED
+        ) {
+          canEdit = false;
+        }
+      }
+
+      if (!canEdit) {
+        return {
+          ok: false,
+          error: '你没有权限!!!',
+        };
+      }
+
+      await this.orders.save([
+        {
+          id: orderId,
+          status,
+        },
+      ]);
+
+      return {
+        ok: true,
       };
     } catch (error) {
       return {
