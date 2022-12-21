@@ -8,9 +8,11 @@ import { Restaurant } from './restaurant.entity';
 @ObjectType()
 export class DishChoice {
   @Field(() => String)
+  @IsString()
   name: string;
 
   @Field(() => Int, { nullable: true })
+  @IsNumber()
   extra?: number;
 }
 
@@ -18,12 +20,14 @@ export class DishChoice {
 @ObjectType()
 export class DishOption {
   @Field(() => String)
+  @IsString()
   name: string;
 
   @Field(() => [DishChoice], { nullable: true })
   choices?: DishChoice[];
 
   @Field(() => Int, { nullable: true })
+  @IsNumber()
   extra: number;
 }
 
