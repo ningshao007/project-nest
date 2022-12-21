@@ -4,7 +4,7 @@ import { Role } from 'src/auth/role.decorator';
 import {
   CreateOrderInput,
   CreateOrderOutput,
-} from 'src/restaurant/dtos/create-order.dto';
+} from 'src/orders/dtos/create-order.dto';
 import { User } from 'src/user/entities/user.entity';
 import { Order } from './entities/order.entity';
 import { OrderService } from './orders.service';
@@ -19,8 +19,6 @@ export class OrderResolver {
     @AuthUser() customer: User,
     @Args('input') createOrderInput: CreateOrderInput,
   ) {
-    return {
-      ok: true,
-    };
+    return this.ordersService.createOrder(customer, createOrderInput);
   }
 }

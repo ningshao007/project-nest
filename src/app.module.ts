@@ -23,6 +23,7 @@ import { AuthModule } from './auth/auth.module';
 import { Dish } from './restaurant/entities/dish.entity';
 import { OrdersModule } from './orders/orders.module';
 import { Order } from './orders/entities/order.entity';
+import { OrderItem } from './orders/entities/order-item.entity';
 
 @Module({
   imports: [
@@ -64,7 +65,15 @@ import { Order } from './orders/entities/order.entity';
       database: 'ningshao1',
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: process.env.NODE_ENV !== 'prod',
-      entities: [Restaurant, User, Verification, Category, Dish, Order],
+      entities: [
+        Restaurant,
+        User,
+        Verification,
+        Category,
+        Dish,
+        Order,
+        OrderItem,
+      ],
     }),
     RestaurantModule,
     UserModule,
