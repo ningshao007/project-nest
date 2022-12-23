@@ -99,6 +99,7 @@ import { OrderItem } from './orders/entities/order-item.entity';
     }),
     AuthModule,
     OrdersModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [],

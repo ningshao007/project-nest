@@ -1,7 +1,9 @@
+import { Inject } from '@nestjs/common';
 import { Args, Mutation, Resolver, Subscription } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Role } from 'src/auth/role.decorator';
+import { PUB_SUB } from 'src/common/constants';
 import {
   CreateOrderInput,
   CreateOrderOutput,
@@ -13,11 +15,12 @@ import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { Order } from './entities/order.entity';
 import { OrderService } from './orders.service';
 
-const pubsub = new PubSub();
-
 @Resolver(() => Order)
 export class OrderResolver {
-  constructor(private readonly ordersService: OrderService) {}
+  constructor(
+    private readonly ordersService: OrderService,
+    @Inject(PUB_SUB) private readonly pubSub: PubSub,
+  ) {}
 
   @Mutation(() => CreateOrderOutput)
   @Role(['CLIENT'])
@@ -59,12 +62,12 @@ export class OrderResolver {
   @Role(['DELIVERY'])
   aaaa(@AuthUser() user: User) {
     console.log('--------user-----------', user);
-    return pubsub.asyncIterator('bbbb');
+    return this.pubSub.asyncIterator('bbbb');
   }
 
   @Mutation(() => Boolean)
   potatoReady() {
-    pubsub.publish('bbbb', {
+    this.pubSub.publish('bbbb', {
       aaaa: 'hello world',
     });
     return true;
