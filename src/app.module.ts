@@ -48,9 +48,11 @@ import { OrderItem } from './orders/entities/order-item.entity';
       driver: ApolloDriver,
       playground: process.env.NODE_ENV !== 'production',
       autoSchemaFile: true,
+
+      installSubscriptionHandlers: true,
+
       context: ({ req }) => {
         const TOKEN_KEY = 'x-jwt';
-
         return {
           token: req && req.headers[TOKEN_KEY],
         };
