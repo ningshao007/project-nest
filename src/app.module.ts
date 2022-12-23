@@ -59,11 +59,7 @@ import { Payment } from './payment/entities/payment.entity';
 
       context: ({ req, connection }) => {
         const TOKEN_KEY = 'x-jwt';
-        console.log(
-          '----------=========--------',
-          req?.headers[TOKEN_KEY],
-          connection?.context[TOKEN_KEY],
-        );
+
         return {
           token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY],
         };
