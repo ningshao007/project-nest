@@ -38,11 +38,13 @@
     "got": "11.7.0",
     "graphql": "^16.6.0",
     "graphql-subscriptions": "^2.0.0",
+    "graphql-ws": "^5.11.2",
     "joi": "^17.7.0",
     "pg": "^8.8.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "subscriptions-transport-ws": "^0.11.0",
     "typeorm": "^0.3.11",
     "uuid": "^9.0.0"
   },

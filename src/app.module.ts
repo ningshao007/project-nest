@@ -1,11 +1,6 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
@@ -15,7 +10,6 @@ import { UserModule } from './user/user.module';
 import { CommonModule } from './common/common.module';
 import { User } from './user/entities/user.entity';
 import { JwtModule } from './jwt/jwt.module';
-import { authMiddleware } from './middleware/auth.middleware';
 import { Verification } from './user/entities/verification.entity';
 import { MailModule } from './mail/mail.module';
 import { Category } from './restaurant/entities/category.entity';
@@ -49,12 +43,27 @@ import { OrderItem } from './orders/entities/order-item.entity';
       playground: process.env.NODE_ENV !== 'production',
       autoSchemaFile: true,
 
-      installSubscriptionHandlers: true,
+      subscriptions: {
+        'subscriptions-transport-ws': {
+          onConnect: (connectionParams) => {
+            const authToken = connectionParams['x-jwt'];
 
-      context: ({ req }) => {
+            return {
+              token: authToken,
+            };
+          },
+        },
+      },
+
+      context: ({ req, connection }) => {
         const TOKEN_KEY = 'x-jwt';
+        console.log(
+          '----------=========--------',
+          req?.headers[TOKEN_KEY],
+          connection?.context[TOKEN_KEY],
+        );
         return {
-          token: req && req.headers[TOKEN_KEY],
+          token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY],
         };
       },
     }),
@@ -94,11 +103,11 @@ import { OrderItem } from './orders/entities/order-item.entity';
   controllers: [],
   providers: [],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(authMiddleware).forRoutes({
-      path: '/graphql',
-      method: RequestMethod.POST,
-    });
-  }
+export class AppModule {
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer.apply(authMiddleware).forRoutes({
+  //     path: '/graphql',
+  //     method: RequestMethod.POST,
+  //   });
+  // }
 }

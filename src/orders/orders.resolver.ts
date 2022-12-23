@@ -56,7 +56,9 @@ export class OrderResolver {
   }
 
   @Subscription(() => String)
-  aaaa() {
+  @Role(['DELIVERY'])
+  aaaa(@AuthUser() user: User) {
+    console.log('--------user-----------', user);
     return pubsub.asyncIterator('bbbb');
   }
 
