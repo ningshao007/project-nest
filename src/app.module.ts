@@ -18,6 +18,8 @@ import { Dish } from './restaurant/entities/dish.entity';
 import { OrdersModule } from './orders/orders.module';
 import { Order } from './orders/entities/order.entity';
 import { OrderItem } from './orders/entities/order-item.entity';
+import { PaymentModule } from './payment/payment.module';
+import { Payment } from './payment/entities/payment.entity';
 
 @Module({
   imports: [
@@ -84,6 +86,7 @@ import { OrderItem } from './orders/entities/order-item.entity';
         Dish,
         Order,
         OrderItem,
+        Payment,
       ],
     }),
     RestaurantModule,
@@ -100,6 +103,7 @@ import { OrderItem } from './orders/entities/order-item.entity';
     AuthModule,
     OrdersModule,
     CommonModule,
+    PaymentModule,
   ],
   controllers: [],
   providers: [],
