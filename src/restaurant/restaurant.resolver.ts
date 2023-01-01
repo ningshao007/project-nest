@@ -27,6 +27,8 @@ import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
+import { MyRestaurantInput, MyRestaurantOutput } from './dtos/my-restaurant';
+import { MyRestaurantsOutput } from './dtos/my-restaurants.dto';
 import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
 import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dot';
 import {
@@ -48,9 +50,19 @@ export class RestaurantResolver {
     return this.restaurantService.getAll();
   }
 
-  @Query(() => [Restaurant])
-  myRestaurant(@Args('veganOnly') veganOnly: boolean): Restaurant[] {
-    return [];
+  @Query(() => MyRestaurantsOutput)
+  @Role(['OWNER'])
+  myRestaurants(@AuthUser() owner: User) {
+    return this.restaurantService.myRestaurants(owner);
+  }
+
+  @Query(() => [MyRestaurantOutput])
+  @Role(['OWNER'])
+  myRestaurant(
+    @AuthUser() owner: User,
+    @Args('input') myRestaurantInput: MyRestaurantInput,
+  ) {
+    return this.restaurantService.myRestaurant(owner, myRestaurantInput);
   }
 
   @Mutation(() => CreateRestaurantOutput)

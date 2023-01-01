@@ -25,6 +25,8 @@ import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
+import { MyRestaurantInput, MyRestaurantOutput } from './dtos/my-restaurant';
+import { MyRestaurantsOutput } from './dtos/my-restaurants.dto';
 import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
 import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dot';
 import {
@@ -45,6 +47,46 @@ export class RestaurantService {
     private readonly categories: Repository<Category>,
     @InjectRepository(Dish) private readonly dishes: Repository<Dish>,
   ) {}
+
+  async myRestaurants(owner: User): Promise<MyRestaurantsOutput> {
+    try {
+      const restaurants = await this.restaurants.find({
+        where: { ownerId: owner.id },
+      });
+
+      return {
+        restaurants,
+        ok: true,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not find restaurants.',
+      };
+    }
+  }
+
+  async myRestaurant(
+    owner: User,
+    { id }: MyRestaurantInput,
+  ): Promise<MyRestaurantOutput> {
+    try {
+      const restaurant = await this.restaurants.findOne({
+        where: { id },
+        relations: ['menu', 'orders'],
+      });
+
+      return {
+        restaurant,
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: 'could not find restaurant',
+      };
+    }
+  }
 
   getAll(): Promise<Restaurant[]> {
     return this.restaurants.find();
@@ -79,7 +121,7 @@ export class RestaurantService {
 
       await this.restaurants.save(newRestaurant);
 
-      return { error: '', ok: true };
+      return { error: '', ok: true, restaurantId: newRestaurant.id };
     } catch (error) {
       return { error, ok: false };
     }

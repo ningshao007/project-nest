@@ -1,5 +1,5 @@
 import { Inject } from '@nestjs/common';
-import { Args, Mutation, Resolver, Subscription } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Role } from 'src/auth/role.decorator';
@@ -47,7 +47,7 @@ export class OrderResolver {
     return this.ordersService.getOrders(user, getOrdersInput);
   }
 
-  @Mutation(() => GetOrderOutput)
+  @Query(() => GetOrderOutput)
   @Role(['ANY'])
   getOrder(
     @AuthUser() user: User,
