@@ -16,10 +16,6 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const roles = this.reflector.get<AllowRole>('roles', context.getHandler());
 
-    if (!roles) {
-      return true;
-    }
-
     const gqlContext = GqlExecutionContext.create(context).getContext();
     const token = gqlContext.token;
 
@@ -32,6 +28,10 @@ export class AuthGuard implements CanActivate {
         if (user) {
           gqlContext['user'] = user;
 
+          if (!roles) {
+            return true;
+          }
+
           if (roles.includes('ANY')) {
             return true;
           }
@@ -39,6 +39,10 @@ export class AuthGuard implements CanActivate {
           return roles.includes(user.role);
         }
       }
+    }
+
+    if (!roles) {
+      return true;
     }
 
     return false;

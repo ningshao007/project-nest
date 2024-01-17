@@ -51,7 +51,8 @@ export class RestaurantService {
   async myRestaurants(owner: User): Promise<MyRestaurantsOutput> {
     try {
       const restaurants = await this.restaurants.find({
-        where: { ownerId: owner.id },
+        // where: { ownerId: owner.id },
+        where: { id: owner.id },
       });
 
       return {
@@ -73,7 +74,7 @@ export class RestaurantService {
     try {
       const restaurant = await this.restaurants.findOne({
         where: { id },
-        relations: ['menu', 'orders'],
+        // relations: ['menu', 'orders'],
       });
 
       return {
@@ -127,13 +128,21 @@ export class RestaurantService {
     }
   }
 
-  async updateRestaurant({ id, data }: UpdateRestaurantDto): Promise<boolean> {
+  async updateRestaurant({
+    id,
+    data,
+  }: UpdateRestaurantDto): Promise<EditRestaurantOutput> {
     try {
-      await this.restaurants.update(id, data);
+      const updateRestaurant = await this.restaurants.update(id, data);
 
-      return true;
+      return {
+        ok: true,
+      };
     } catch (error) {
-      return false;
+      return {
+        ok: false,
+        error,
+      };
     }
   }
 
@@ -145,8 +154,6 @@ export class RestaurantService {
       const restaurant = await this.restaurants.findOne({
         where: { id: editRestaurantInput.restaurantId },
       });
-
-      console.log('-----restaurant----', restaurant);
 
       if (!restaurant) {
         return {
@@ -448,7 +455,7 @@ export class RestaurantService {
         };
       }
 
-      if (dish.restaurant.ownerId !== owner.id) {
+      if (dish?.restaurant?.ownerId !== owner.id) {
         return {
           ok: false,
           error: '你没有权限',
